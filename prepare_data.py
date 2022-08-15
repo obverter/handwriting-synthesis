@@ -13,12 +13,15 @@ def get_stroke_sequence(filename):
 
     coords = []
     for stroke in strokes:
-        for i, point in enumerate(stroke):
-            coords.append([
+        coords.extend(
+            [
                 int(point.attrib['x']),
-                -1*int(point.attrib['y']),
-                int(i == len(stroke) - 1)
-            ])
+                -1 * int(point.attrib['y']),
+                int(i == len(stroke) - 1),
+            ]
+            for i, point in enumerate(stroke)
+        )
+
     coords = np.array(coords)
 
     coords = drawing.align(coords)
@@ -44,10 +47,11 @@ def collect_data():
     for dirpath, dirnames, filenames in os.walk('data/raw/ascii/'):
         if dirnames:
             continue
-        for filename in filenames:
-            if filename.startswith('.'):
-                continue
-            fnames.append(os.path.join(dirpath, filename))
+        fnames.extend(
+            os.path.join(dirpath, filename)
+            for filename in filenames
+            if not filename.startswith('.')
+        )
 
     # low quality samples (selected by collecting samples to
     # which the trained model assigned very low likelihood)
@@ -74,7 +78,7 @@ def collect_data():
             continue
 
         original_dir = head.replace('ascii', 'original')
-        original_xml = os.path.join(original_dir, 'strokes' + last_letter + '.xml')
+        original_xml = os.path.join(original_dir, f'strokes{last_letter}.xml')
         tree = ElementTree.parse(original_xml)
         root = tree.getroot()
 

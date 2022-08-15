@@ -16,7 +16,7 @@ class DataReader(object):
 
     def __init__(self, data_dir):
         data_cols = ['x', 'x_len', 'c', 'c_len']
-        data = [np.load(os.path.join(data_dir, '{}.npy'.format(i))) for i in data_cols]
+        data = [np.load(os.path.join(data_dir, f'{i}.npy')) for i in data_cols]
 
         self.test_df = DataFrame(columns=data_cols, data=data)
         self.train_df, self.val_df = self.test_df.train_test_split(train_size=0.95, random_state=2018)

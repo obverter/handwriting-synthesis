@@ -79,10 +79,7 @@ def time_distributed_dense_layer(
 
 def shape(tensor, dim=None):
     """Get tensor shape/dimension as list/int"""
-    if dim is None:
-        return tensor.shape.as_list()
-    else:
-        return tensor.shape.as_list()[dim]
+    return tensor.shape.as_list() if dim is None else tensor.shape.as_list()[dim]
 
 
 def rank(tensor):

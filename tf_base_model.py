@@ -100,10 +100,10 @@ class TFBaseModel(object):
         self.prediction_dir = prediction_dir
         self.checkpoint_dir = checkpoint_dir
         if self.enable_parameter_averaging:
-            self.checkpoint_dir_averaged = checkpoint_dir + '_avg'
+            self.checkpoint_dir_averaged = f'{checkpoint_dir}_avg'
 
         self.init_logging(self.log_dir)
-        logging.info('\nnew run with parameters:\n{}'.format(pp.pformat(self.__dict__)))
+        logging.info(f'\nnew run with parameters:\n{pp.pformat(self.__dict__)}')
 
         self.graph = self.build_graph()
         self.session = tf.Session(graph=self.graph)
