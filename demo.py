@@ -43,27 +43,23 @@ class Hand(object):
         for line_num, line in enumerate(lines):
             if len(line) > 75:
                 raise ValueError(
-                    (
-                        "Each line must be at most 75 characters. "
-                        "Line {} contains {}"
-                    ).format(line_num, len(line))
+                    f"Each line must be at most 75 characters. Line {line_num} contains {len(line)}"
                 )
+
 
             for char in line:
                 if char not in valid_char_set:
                     raise ValueError(
-                        (
-                            "Invalid character {} detected in line {}. "
-                            "Valid character set is {}"
-                        ).format(char, line_num, valid_char_set)
+                        f"Invalid character {char} detected in line {line_num}. Valid character set is {valid_char_set}"
                     )
+
 
         strokes = self._sample(lines, biases=biases, styles=styles)
         self._draw(strokes, lines, filename, stroke_colors=stroke_colors, stroke_widths=stroke_widths)
 
     def _sample(self, lines, biases=None, styles=None):
         num_samples = len(lines)
-        max_tsteps = 40*max([len(i) for i in lines])
+        max_tsteps = 40 * max(len(i) for i in lines)
         biases = biases if biases is not None else [0.5]*num_samples
 
         x_prime = np.zeros([num_samples, 1200, 3])
@@ -73,10 +69,10 @@ class Hand(object):
 
         if styles is not None:
             for i, (cs, style) in enumerate(zip(lines, styles)):
-                x_p = np.load('styles/style-{}-strokes.npy'.format(style))
-                c_p = np.load('styles/style-{}-chars.npy'.format(style)).tostring().decode('utf-8')
+                x_p = np.load(f'styles/style-{style}-strokes.npy')
+                c_p = np.load(f'styles/style-{style}-chars.npy').tostring().decode('utf-8')
 
-                c_p = str(c_p) + " " + cs
+                c_p = f"{str(c_p)} {cs}"
                 c_p = drawing.encode_ascii(c_p)
                 c_p = np.array(c_p)
 
@@ -136,9 +132,9 @@ class Hand(object):
             strokes[:, 0] += (view_width - strokes[:, 0].max()) / 2
 
             prev_eos = 1.0
-            p = "M{},{} ".format(0, 0)
+            p = 'M0,0 '
             for x, y, eos in zip(*strokes.T):
-                p += '{}{},{} '.format('M' if prev_eos == 1.0 else 'L', x, y)
+                p += f"{'M' if prev_eos == 1.0 else 'L'}{x},{y} "
                 prev_eos = eos
             path = svgwrite.path.Path(p)
             path = path.stroke(color=color, width=width, linecap='round').fill("none")
@@ -159,8 +155,8 @@ if __name__ == '__main__':
         "And I'd like to take a minute, just sit right there",
         "I'll tell you how I became the prince of a town called Bel-Air",
     ]
-    biases = [.75 for i in lines]
-    styles = [9 for i in lines]
+    biases = [.75 for _ in lines]
+    styles = [9 for _ in lines]
     stroke_colors = ['red', 'green', 'black', 'blue']
     stroke_widths = [1, 2, 1, 2]
 
@@ -175,8 +171,8 @@ if __name__ == '__main__':
 
     # demo number 1 - fixed bias, fixed style
     lines = lyrics.all_star.split("\n")
-    biases = [.75 for i in lines]
-    styles = [12 for i in lines]
+    biases = [.75 for _ in lines]
+    styles = [12 for _ in lines]
 
     hand.write(
         filename='img/all_star.svg',
@@ -187,7 +183,7 @@ if __name__ == '__main__':
 
     # demo number 2 - fixed bias, varying style
     lines = lyrics.downtown.split("\n")
-    biases = [.75 for i in lines]
+    biases = [.75 for _ in lines]
     styles = np.cumsum(np.array([len(i) for i in lines]) == 0).astype(int)
 
     hand.write(
@@ -200,7 +196,7 @@ if __name__ == '__main__':
     # demo number 3 - varying bias, fixed style
     lines = lyrics.give_up.split("\n")
     biases = .2*np.flip(np.cumsum([len(i) == 0 for i in lines]), 0)
-    styles = [7 for i in lines]
+    styles = [7 for _ in lines]
 
     hand.write(
         filename='img/give_up.svg',

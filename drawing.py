@@ -210,7 +210,7 @@ def draw(
 
     if save_file is not None:
         plt.savefig(save_file)
-        print('saved to {}'.format(save_file))
+        print(f'saved to {save_file}')
     else:
         plt.show()
     plt.close('all')

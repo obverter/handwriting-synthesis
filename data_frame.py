@@ -75,9 +75,11 @@ class DataFrame(object):
         return DataFrame(copy.copy(self.columns), [mat[mask] for mat in self.data])
 
     def concat(self, other_df):
-        mats = []
-        for column in self.columns:
-            mats.append(np.concatenate([self[column], other_df[column]], axis=0))
+        mats = [
+            np.concatenate([self[column], other_df[column]], axis=0)
+            for column in self.columns
+        ]
+
         return DataFrame(copy.copy(self.columns), mats)
 
     def items(self):
